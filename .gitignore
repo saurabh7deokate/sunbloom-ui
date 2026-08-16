@@ -1,0 +1,55 @@
+## Dependencies
+/node_modules
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+
+## Angular build output
+/dist
+/tmp
+/out-tsc
+/bazel-out
+.angular/cache
+
+## Testing
+/coverage
+/.nyc_output
+/e2e/results
+/playwright-report
+/test-results
+/blob-report
+
+## IDE
+.vscode/*
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
+.idea/
+*.iml
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+.history/
+
+## Environment and secrets — API base URLs and keys go through
+## environment files that are generated at build time, not committed.
+.env
+.env.*
+!.env.example
+src/environments/environment.local.ts
+
+## OS noise
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+
+## Misc
+*.log
+.sass-cache/
+connect.lock
+typings/
