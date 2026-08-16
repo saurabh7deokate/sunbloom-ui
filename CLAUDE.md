@@ -62,9 +62,47 @@ mascots, badges, or confetti.
 
 ## Environment
 
-Node v20.19.0 · Angular 21 target — **verify the Node requirement at scaffold time**,
-v20.19.0 is exactly at the v20 minimum and Angular 21 may require Node 22+.
+Node **v20.19.0** · Angular **21.2** · Vitest · Playwright · Tailwind 4
+
+**Angular 21 is a deliberate choice, not staleness.** Angular 22 is current but requires
+Node `^22.22.3`; the owner chose to stay on Node 20 for now. Do not "upgrade" to Angular
+22 — it will not build on this machine. Revisit only if Node is upgraded first.
+
+The dev server runs on **port 4300**, not 4200 — an unrelated process occupies 4200 on
+this machine.
+
+## Commands
+
+```bash
+npm start            # dev server on :4300, proxies /api to the API on :5078
+npm test             # Vitest unit tests
+npm run e2e          # Playwright; needs API on :5078 and npm start running
+npm run sync:openapi # pull the contract from a running API into openapi/
+npm run generate:api # regenerate src/app/api/generated/schema.ts from it
+```
+
+`proxy.conf.json` forwards `/api` to `http://localhost:5078`, so the browser sees one
+origin and CORS never has to be configured.
+
+## Gotchas that have already cost time
+
+- **Areas start expanded, deeper levels collapsed.** A toggle's accessible name is
+  `Expand X` or `Collapse X` depending on state — targeting the wrong one in a test
+  matches nothing and burns the whole timeout.
+- **`ng test` can flake on a cold start** (browser runner timing out around 60s while
+  the dev server is also building). Re-run before investigating.
+- The **root component holds only `<router-outlet />`**. App chrome lives in `Shell`,
+  which wraps authenticated routes only — so login and register render without it.
 
 ## Current state
 
-Not yet scaffolded. See `sunbloom-api/docs/ROADMAP.md` for the current slice.
+**Sub-slice 1.4 complete.** Scaffold, Tailwind, generated API types, auth flow with
+shared-refresh interceptor, route guards, skill tree and detail pages, 6 unit tests and
+4 Playwright E2E tests passing.
+
+Next: **1.5 — content generator CLI and review workflow** (in `sunbloom-api`). See
+`sunbloom-api/docs/ROADMAP.md`.
+
+**Known gap:** tokens are in `localStorage`, which trades XSS exposure for surviving a
+page refresh. The safer arrangement is an httpOnly cookie for the refresh token, which
+needs an API change. Recorded, not forgotten.
