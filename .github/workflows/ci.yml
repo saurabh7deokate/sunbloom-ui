@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build and test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          # Matches the local runtime. Angular 22 would need Node 22+; staying on
+          # Angular 21 is a deliberate choice recorded in CLAUDE.md.
+          node-version: '20.19.0'
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Unit tests
+        run: npx ng test --watch=false
+
+      - name: Build
+        run: npm run build
+
+      # Guards the two-repo contract: if the committed OpenAPI document and the
+      # generated types have drifted, this fails rather than surfacing at runtime.
+      - name: Generated API types are up to date
+        run: |
+          npm run generate:api
+          git diff --exit-code src/app/api/generated/schema.ts
+
+# Playwright E2E is not run here: it needs the API and a PostgreSQL database.
+# It runs locally with `npm run e2e`, and gets a CI job when the API is
+# containerised.
