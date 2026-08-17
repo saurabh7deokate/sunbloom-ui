@@ -24,6 +24,9 @@ import { AuthStore } from '../auth/auth.store';
 
       <nav class="sb-nav" aria-label="Main">
         <a routerLink="/skills" routerLinkActive="is-active">Skills</a>
+        @if (auth.isContentAdmin()) {
+          <a routerLink="/review" routerLinkActive="is-active">Review</a>
+        }
       </nav>
 
       <div class="sb-header__end">

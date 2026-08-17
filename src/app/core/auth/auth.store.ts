@@ -47,6 +47,17 @@ export class AuthStore {
   readonly user = this.userSignal.asReadonly();
   readonly isAuthenticated = computed(() => this.accessTokenSignal() !== null);
 
+  /**
+   * Whether to show admin navigation. A display hint only — the API decides.
+   *
+   * Reads from the loaded user rather than decoding the JWT: the token is an opaque
+   * bearer credential to this client, and parsing it here would invite treating its
+   * claims as trustworthy.
+   */
+  readonly isContentAdmin = computed(
+    () => this.userSignal()?.roles?.includes('ContentAdmin') ?? false,
+  );
+
   hasRefreshToken(): boolean {
     return this.refreshTokenSignal() !== null;
   }

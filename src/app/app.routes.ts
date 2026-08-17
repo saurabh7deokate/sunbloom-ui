@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 
+import { contentAdminGuard } from './core/auth/admin.guard';
 import { anonymousOnlyGuard, authGuard } from './core/auth/auth.guard';
 import { Shell } from './core/layout/shell';
 
@@ -26,6 +27,11 @@ export const routes: Routes = [
       {
         path: 'skills',
         loadChildren: () => import('./features/skills/skills.routes').then((m) => m.skillsRoutes),
+      },
+      {
+        path: 'review',
+        canActivate: [contentAdminGuard],
+        loadChildren: () => import('./features/admin/admin.routes').then((m) => m.adminRoutes),
       },
     ],
   },

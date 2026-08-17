@@ -301,22 +301,243 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/skills": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create a skill. Omit generation info to mark it human-authored. */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["CreateSkillRequest"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["SkillAdminView"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/skills/relationships": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Relate two skills. Prerequisite edges that would create a cycle are rejected. */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["CreateSkillRelationshipRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["SkillSummary"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/skills/pending": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The review queue, shallowest containment depth first. */
+        get: {
+            parameters: {
+                query?: {
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PendingReviewPage"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/skills/{slug}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Approve a draft skill. */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    slug: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": null | components["schemas"]["ReviewDecisionRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["SkillAdminView"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/skills/{slug}/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Reject a draft skill. */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    slug: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": null | components["schemas"]["ReviewDecisionRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["SkillAdminView"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        AiGenerationInfo: {
+            model: string;
+            promptVersion: string;
+        };
         AuthResponse: {
             accessToken: string;
             refreshToken: string;
             /** Format: int32 */
-            expiresInSeconds: number | string;
+            expiresInSeconds: number;
             user: components["schemas"]["UserResponse"];
+        };
+        CreateSkillRelationshipRequest: {
+            fromSlug: string;
+            toSlug: string;
+            type: string;
+            /** Format: double */
+            strength: number;
+        };
+        CreateSkillRequest: {
+            slug: string;
+            name: string;
+            kind: string;
+            description: null | string;
+            parentSlug: null | string;
+            generation: null | components["schemas"]["AiGenerationInfo"];
         };
         HttpValidationProblemDetails: {
             type?: null | string;
             title?: null | string;
             /** Format: int32 */
-            status?: null | number | string;
+            status?: number;
             detail?: null | string;
             instance?: null | string;
             errors?: {
@@ -327,6 +548,13 @@ export interface components {
             email: string;
             password: string;
         };
+        PendingReviewPage: {
+            items: components["schemas"]["SkillAdminView"][];
+            /** Format: int32 */
+            totalPending: number;
+            /** Format: int32 */
+            depth: number;
+        };
         RefreshRequest: {
             refreshToken: string;
         };
@@ -335,6 +563,28 @@ export interface components {
             password: string;
             displayName: string;
             timeZone: null | string;
+        };
+        ReviewDecisionRequest: {
+            notes: null | string;
+        };
+        SkillAdminView: {
+            /** Format: uuid */
+            id: string;
+            slug: string;
+            name: string;
+            description: null | string;
+            kind: string;
+            parentSlug: null | string;
+            isActive: boolean;
+            reviewState: string;
+            generationSource: string;
+            generatorModel: null | string;
+            generatorPromptVersion: null | string;
+            /** Format: date-time */
+            generatedAt: null | string;
+            /** Format: date-time */
+            reviewedAt: null | string;
+            reviewNotes: null | string;
         };
         SkillDetail: {
             /** Format: uuid */
@@ -371,6 +621,7 @@ export interface components {
             email: string;
             displayName: string;
             timeZone: string;
+            roles: string[];
         };
     };
     responses: never;

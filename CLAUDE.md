@@ -77,6 +77,10 @@ this machine.
 npm start            # dev server on :4300, proxies /api to the API on :5078
 npm test             # Vitest unit tests
 npm run e2e          # Playwright; needs API on :5078 and npm start running
+
+# Review-queue E2E needs a ContentAdmin account. Credentials come from the environment,
+# never the repo — the tests skip with a stated reason when these are unset.
+SB_ADMIN_EMAIL=you@example.com SB_ADMIN_PASSWORD=... npm run e2e
 npm run sync:openapi # pull the contract from a running API into openapi/
 npm run generate:api # regenerate src/app/api/generated/schema.ts from it
 ```
@@ -96,11 +100,16 @@ origin and CORS never has to be configured.
 
 ## Current state
 
-**Sub-slice 1.4 complete.** Scaffold, Tailwind, generated API types, auth flow with
-shared-refresh interceptor, route guards, skill tree and detail pages, 6 unit tests and
-4 Playwright E2E tests passing.
+**Sub-slices 1.4 and 1.5b complete.** Scaffold, Tailwind, generated API types, auth flow
+with shared-refresh interceptor, route guards, skill tree and detail pages, and the
+content review queue at `/review` (ContentAdmin only).
 
-Next: **1.5 — content generator CLI and review workflow** (in `sunbloom-api`). See
+The review queue supports bulk approve, because a real career path is several hundred
+nodes and approving them one dialog at a time is how review degrades into
+rubber-stamping. Reject is deliberately slower — it asks for a note, which is what tells
+the next prompt version what went wrong.
+
+Next: **1.6 — the evidence ledger and scoring** (in `sunbloom-api`). See
 `sunbloom-api/docs/ROADMAP.md`.
 
 **Known gap:** tokens are in `localStorage`, which trades XSS exposure for surviving a

@@ -19,4 +19,8 @@ export type SkillTreeNode = components['schemas']['SkillTreeNode'];
 export type SkillDetail = components['schemas']['SkillDetail'];
 export type SkillSummary = components['schemas']['SkillSummary'];
 
+export type SkillAdminView = components['schemas']['SkillAdminView'];
+export type PendingReviewPage = components['schemas']['PendingReviewPage'];
+export type ReviewDecisionRequest = components['schemas']['ReviewDecisionRequest'];
+
 export type ValidationProblem = components['schemas']['HttpValidationProblemDetails'];
